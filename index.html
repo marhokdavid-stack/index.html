@@ -147,7 +147,7 @@
 
                     <div class="balance-card">
                         <div style="font-size:14px; margin-bottom:15px; opacity:0.9;">SOLDE ACTUEL TOTAL</div>
-                        <div class="amount-flow">1 887 956,00 €</div>
+                        <div class="amount-flow">688 956,00 €</div>
                     </div>
                     
                     <div style="margin-top:30px; border:1px solid #eee; padding:20px;">
@@ -192,7 +192,6 @@
             const user = document.getElementById('u').value.trim();
             const pass = document.getElementById('p').value.trim();
             
-            // Accepte 'DavidMarhok' ou 'David'
             if((user.toLowerCase() === "davidmarhok" || user.toLowerCase() === "david") && pass === "Beauyeux") {
                 document.getElementById('welcomePage').classList.add('hidden');
                 document.getElementById('loginOverlay').classList.remove('active');
@@ -214,7 +213,7 @@
             
             if(type === 'releve') {
                 title.innerText = "RELEVÉ DE COMPTE MENSUEL";
-                body.innerHTML = "Le présent document atteste que le compte rattaché à l'IBAN <b>FR76 5558 2642 7654 3338 678</b> au nom de <b>M. David MARHOK</b> présente un solde créditeur de <b>1 887 956,00 €</b>. <br><br> Les opérations de crédit récentes sont en cours de validation finale par le service de conformité.";
+                body.innerHTML = "Le présent document atteste que le compte rattaché à l'IBAN <b>FR76 5558 2642 7654 3338 678</b> au nom de <b>M. David MARHOK</b> présente un solde créditeur de <b>688 956,00 €</b>. <br><br> Les opérations de crédit récentes sont en cours de validation finale par le service de conformité.";
             } else {
                 title.innerText = "ATTESTATION DE DÉBLOCAGE DE FONDS";
                 body.innerHTML = "Nous, BNP Paribas, certifions que la procédure de déblocage des fonds pour <b>M. David MARHOK</b> est validée à hauteur de 85%. <br><br> La disponibilité totale sera effective dès la finalisation du traitement administratif.";
