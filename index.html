@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BNP Paribas - La banque d'un monde qui change</title>
+    <style>
+        :root { --bnp-green: #00965e; --bnp-dark: #007a4d; --orange: #ff7900; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background-color: #f4f7f6; color: #333; scroll-behavior: smooth; overflow-x: hidden; }
+        .hidden { display: none !important; }
+
+        /* --- PAGE D'ACCUEIL --- */
+        .hero { background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1350&q=80'); 
+                background-size: cover; background-position: center; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center; padding: 20px; }
+        .hero h1 { font-size: 42px; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        .hero p { font-size: 18px; max-width: 650px; margin-bottom: 30px; line-height: 1.6; }
+        .btn-start { background: var(--bnp-green); color: white; padding: 18px 45px; border-radius: 50px; border: none; font-weight: bold; font-size: 20px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .btn-start:hover { background: var(--bnp-dark); transform: scale(1.05); }
+
+        /* --- PANNEAU DE CONNEXION COULISSANT --- */
+        #loginOverlay { position: fixed; top: 0; right: -100%; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; transition: 0.5s; display: flex; justify-content: flex-end; }
+        #loginOverlay.active { right: 0; }
+        .login-sidebar { width: 400px; background: white; height: 100%; padding: 40px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; position: relative; }
+        .close-btn { position: absolute; top: 20px; left: 20px; font-size: 30px; cursor: pointer; color: #333; }
+        .login-sidebar h2 { color: var(--bnp-green); margin-bottom: 30px; border-left: 5px solid var(--bnp-green); padding-left: 15px; }
+        .field { margin-bottom: 25px; }
+        .field label { display: block; margin-bottom: 8px; font-weight: bold; color: #666; }
+        .field input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; box-sizing: border-box; }
+        .btn-submit { background: var(--bnp-green); color: white; border: none; width: 100%; padding: 15px; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 16px; }
+
+        /* --- INTERFACE COMPTE --- */
+        .app-container { width: 1150px; margin: 0 auto; background: white; min-height: 100vh; box-shadow: 0 0 30px rgba(0,0,0,0.2); }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; border-bottom: 4px solid var(--bnp-green); }
+        .user-info { display: flex; align-items: center; gap: 20px; text-align: right; }
+        .logout-link { color: #d9534f; cursor: pointer; font-weight: bold; font-size: 12px; text-decoration: underline; }
+
+        .nav-main { background: var(--bnp-green); color: white; display: flex; list-style: none; padding: 0; margin: 0; }
+        .nav-main li { padding: 15px 30px; border-right: 1px solid rgba(255,255,255,0.2); cursor: pointer; font-weight: bold; }
+        .nav-main li:hover { background: var(--bnp-dark); }
+
+        .content-flex { display: flex; padding: 35px; gap: 40px; }
+        .sidebar { width: 260px; }
+        .sb-title { background: #eee; padding: 10px; font-weight: bold; color: var(--bnp-green); margin-bottom: 5px; }
+        .sb-menu { list-style: none; padding: 0; margin-bottom: 25px; }
+        .sb-menu li { padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .sb-menu li:hover { color: var(--bnp-green); padding-left: 18px; transition: 0.3s; }
+
+        .main-panel { flex: 1; }
+        .doc-buttons { display: flex; gap: 15px; margin-bottom: 30px; }
+        .btn-doc { flex: 1; background: #f8f9fa; border: 1px solid #ddd; padding: 15px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-weight: bold; transition: 0.2s; }
+        .btn-doc:hover { background: #eef2f7; border-color: var(--bnp-green); }
+
+        .progress-box { background: #fff8e1; border: 1px solid #ffe082; padding: 20px; border-radius: 8px; margin-bottom: 25px; }
+        .p-bar-bg { background: #ddd; height: 10px; border-radius: 5px; margin-top: 10px; }
+        .p-bar-fill { background: var(--orange); height: 100%; width: 0%; border-radius: 5px; transition: 2s; }
+
+        .balance-card { background: var(--bnp-green); color: white; padding: 30px; border-radius: 12px; text-align: center; position: relative; overflow: hidden; }
+        @keyframes flow { 0% { transform: translateX(100%); } 100% { transform: translateX(-160%); } }
+        .amount-flow { font-size: 42px; font-weight: bold; animation: flow 18s linear infinite; white-space: nowrap; display: block; }
+
+        /* --- FENETRE DOCUMENT --- */
+        #docOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; display: none; align-items: center; justify-content: center; }
+        .doc-content { background: white; width: 600px; padding: 50px; border-radius: 5px; position: relative; font-family: 'Times New Roman', serif; }
+        .doc-header { border-bottom: 2px solid var(--bnp-green); margin-bottom: 20px; padding-bottom: 10px; color: var(--bnp-green); font-weight: bold; }
+
+        .footer { text-align: center; padding: 40px; color: #888; font-size: 11px; }
+    </style>
+</head>
+<body>
+
+    <!-- 1. PAGE D'ACCUEIL -->
+    <div id="welcomePage">
+        <div class="hero">
+            <h1>La banque d'un monde qui change</h1>
+            <p>"Réussir, c'est anticiper." Accédez à vos solutions de gestion privée et suivez l'évolution de vos actifs en temps réel.</p>
+            <button class="btn-start" onclick="toggleLogin(true)">ACCÉDER À MON ESPACE CLIENT</button>
+        </div>
+        <div class="footer">&copy; 2026 BNP Paribas - Banque et Assurances</div>
+    </div>
+
+    <!-- 2. PANNEAU DE CONNEXION (INDICE COULISSANT) -->
+    <div id="loginOverlay">
+        <div class="login-sidebar">
+            <span class="close-btn" onclick="toggleLogin(false)">&times;</span>
+            <h2>Espace Privé</h2>
+            <div class="field">
+                <label>Identifiant client</label>
+                <input type="text" id="u" placeholder="DavidMarhok">
+            </div>
+            <div class="field">
+                <label>Code secret</label>
+                <input type="password" id="p" placeholder="••••••••">
+            </div>
+            <button class="btn-submit" onclick="connexion()">IDENTIFICATION</button>
+            <p style="margin-top:20px; font-size:12px; color:#888;">Pour votre sécurité, ne communiquez jamais vos codes.</p>
+        </div>
+    </div>
+
+    <!-- 3. INTERFACE COMPTE -->
+    <div id="app" class="hidden">
+        <div class="app-container">
+            <div class="header">
+                <div style="color:var(--bnp-green); font-size:24px; font-weight:bold;">BNP PARIBAS</div>
+                <div class="user-info">
+                    <div>
+                        <strong>M. DAVID MARHOK</strong><br>
+                        <span id="timer" style="color:var(--orange); font-weight:bold;">00:00:00</span>
+                    </div>
+                    <div class="logout-link" onclick="location.reload()">DÉCONNEXION</div>
+                </div>
+            </div>
+
+            <ul class="nav-main">
+                <li onclick="action('Accueil')">ACCUEIL</li>
+                <li onclick="action('Comptes')">MES COMPTES</li>
+                <li onclick="action('Virements')">VIREMENTS</li>
+                <li onclick="action('Services')">AIDE</li>
+            </ul>
+
+            <div class="content-flex">
+                <div class="sidebar">
+                    <div class="sb-title">DOCUMENTS</div>
+                    <ul class="sb-menu">
+                        <li onclick="openDoc('releve')">Relevé mensuel</li>
+                        <li onclick="openDoc('attestation')">Attestation de fonds</li>
+                    </ul>
+                    <div class="sb-title">GESTION</div>
+                    <ul class="sb-menu">
+                        <li onclick="action('Profil')">Mon Profil</li>
+                        <li onclick="action('Securite')">Sécurité</li>
+                    </ul>
+                </div>
+
+                <div class="main-panel">
+                    <h2 style="margin-top:0">Synthèse du Compte Courant</h2>
+                    
+                    <div class="doc-buttons">
+                        <div class="btn-doc" onclick="openDoc('releve')">📄 Télécharger Relevé (PDF)</div>
+                        <div class="btn-doc" onclick="openDoc('attestation')">📜 Attestation de Déblocage</div>
+                    </div>
+
+                    <div class="progress-box">
+                        <div style="font-weight:bold; color:var(--orange)">🔄 DOSSIER EN COURS DE FINALISATION (85%)</div>
+                        <div class="p-bar-bg"><div class="p-bar-fill" id="pbar"></div></div>
+                        <p style="font-size:12px; color:#666; margin-top:10px;">Votre gestionnaire <b>Fabienne Duho</b> finalise la vérification de vos avoirs.</p>
+                    </div>
+
+                    <div class="balance-card">
+                        <div style="font-size:14px; margin-bottom:15px; opacity:0.9;">SOLDE ACTUEL TOTAL</div>
+                        <div class="amount-flow">1 887 956,00 €</div>
+                    </div>
+                    
+                    <div style="margin-top:30px; border:1px solid #eee; padding:20px;">
+                        <table style="width:100%; font-size:14px; border-collapse: collapse;">
+                            <tr style="border-bottom:1px solid #f0f0f0;"><td style="padding:10px; font-weight:bold; color:#888;">Titulaire</td><td><b>M. David MARHOK</b></td></tr>
+                            <tr style="border-bottom:1px solid #f0f0f0;"><td style="padding:10px; font-weight:bold; color:#888;">IBAN</td><td><b>FR76 5558 2642 7654 3338 678</b></td></tr>
+                            <tr style="border-bottom:1px solid #f0f0f0;"><td style="padding:10px; font-weight:bold; color:#888;">BIC / SWIFT</td><td>BNPAFRPPXXX</td></tr>
+                            <tr style="border-bottom:1px solid #f0f0f0;"><td style="padding:10px; font-weight:bold; color:#888;">Code Banque</td><td>30004</td></tr>
+                            <tr style="border-bottom:1px solid #f0f0f0;"><td style="padding:10px; font-weight:bold; color:#888;">Code Guichet</td><td>03626</td></tr>
+                            <tr style="border-bottom:1px solid #f0f0f0;"><td style="padding:10px; font-weight:bold; color:#888;">Clé RIB</td><td>61</td></tr>
+                            <tr><td style="padding:10px; font-weight:bold; color:#888;">Statut du compte</td><td style="color:var(--orange); font-weight:bold;">Compte Restreint (En déblocage)</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. FENETRE DOCUMENT (PDF SIMULÉ) -->
+    <div id="docOverlay">
+        <div class="doc-content">
+            <span class="close-btn" style="top:10px; right:10px; left:auto;" onclick="closeDoc()">&times;</span>
+            <div class="doc-header">BNP PARIBAS - GESTION PRIVÉE</div>
+            <h3 id="docTitle" style="text-align:center; text-decoration:underline;"></h3>
+            <p>Destinataire : <b>M. David MARHOK</b></p>
+            <p>IBAN : <b>FR76 5558 2642 7654 3338 678</b></p>
+            <p>BIC : BNPAFRPPXXX</p>
+            <p>Date : 05 Octobre 2026</p>
+            <div id="docBody" style="line-height:1.6; margin-top:25px;"></div>
+            <div style="margin-top:40px; text-align:right;">
+                <i>Signé électroniquement par la Direction<br>Cachet de l'Agence BNP Paribas</i>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleLogin(show) {
+            document.getElementById('loginOverlay').classList.toggle('active', show);
+        }
+
+        function connexion() {
+            const user = document.getElementById('u').value.trim();
+            const pass = document.getElementById('p').value.trim();
+            
+            // Accepte 'DavidMarhok' ou 'David'
+            if((user.toLowerCase() === "davidmarhok" || user.toLowerCase() === "david") && pass === "Beauyeux") {
+                document.getElementById('welcomePage').classList.add('hidden');
+                document.getElementById('loginOverlay').classList.remove('active');
+                document.getElementById('app').classList.remove('hidden');
+                setTimeout(() => { document.getElementById('pbar').style.width = "85%"; }, 500);
+                setInterval(() => {
+                    document.getElementById('timer').innerText = new Date().toLocaleTimeString('fr-FR');
+                }, 1000);
+            } else { 
+                alert("Identifiants incorrects. Veuillez réessayer."); 
+            }
+        }
+
+        function openDoc(type) {
+            const overlay = document.getElementById('docOverlay');
+            const title = document.getElementById('docTitle');
+            const body = document.getElementById('docBody');
+            overlay.style.display = 'flex';
+            
+            if(type === 'releve') {
+                title.innerText = "RELEVÉ DE COMPTE MENSUEL";
+                body.innerHTML = "Le présent document atteste que le compte rattaché à l'IBAN <b>FR76 5558 2642 7654 3338 678</b> au nom de <b>M. David MARHOK</b> présente un solde créditeur de <b>1 887 956,00 €</b>. <br><br> Les opérations de crédit récentes sont en cours de validation finale par le service de conformité.";
+            } else {
+                title.innerText = "ATTESTATION DE DÉBLOCAGE DE FONDS";
+                body.innerHTML = "Nous, BNP Paribas, certifions que la procédure de déblocage des fonds pour <b>M. David MARHOK</b> est validée à hauteur de 85%. <br><br> La disponibilité totale sera effective dès la finalisation du traitement administratif.";
+            }
+        }
+
+        function closeDoc() { document.getElementById('docOverlay').style.display = 'none'; }
+        function action(nom) { alert("Accès restreint : [" + nom + "] est temporairement indisponible pendant la procédure de déblocage."); }
+    </script>
+</body>
+</html>
